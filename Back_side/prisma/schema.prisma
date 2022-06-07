@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// modelling db
+
+//user
+model users {
+  id                       Int              @id @default(autoincrement()) @db.Integer
+  first_name               String           @db.VarChar(50)
+  last_name                String           @db.VarChar(50)
+  phone                    String           @db.VarChar(20)
+  national_id              Int              @db.Integer
+  personal_id              Int              @db.Integer
+  birthday                 DateTime
+  entery_year              Int?             @db.SmallInt
+  study_field              String?          @db.VarChar(50)
+  photo                    String?          @db.VarChar(100)
+  created_at               DateTime         @default(now())
+  assigned_by              Int              @db.Integer /// who create this user , totally for students and proffeser
+  master_assigned_projects project_helper?  @relation(fields: [assigned_projects], references: [id])
+  student_projects         project_student?
+  assigned_projects        Int?
+  account_status           account_status?
+  roles_of_users           roles_of_users[]
+}
+
+model roles_of_users {
+  id         Int      @id @default(autoincrement())
+  role       roles    @relation(fields: [role_id], references: [id])
+  user       users    @relation(fields: [user_id], references: [id])
+  created_at DateTime @default(now())
+  role_id    Int      @db.SmallInt
+  user_id    Int      @db.Integer
+}
+
+model account_status {
+  id          Int     @id @default(autoincrement())
+  user        users   @relation(fields: [user_id], references: [id])
+  status      String  @db.VarChar(10)
+  description String? @db.VarChar(100)
+  user_id     Int     @unique @db.Integer
+}
+
+/// Roles
+model roles {
+  id                  Int                   @id @default(autoincrement()) @db.SmallInt
+  name                String                @unique @db.VarChar(50)
+  score               Int?                  @db.Integer()
+  permisions_of_roles permisions_of_roles[]
+  roles_of_users      roles_of_users[]
+}
+
+model permisions {
+  id                  Int                   @id @default(autoincrement()) @db.Integer
+  name                String                @unique @db.VarChar(50)
+  key                 String                @unique @db.VarChar(50)
+  permisions_of_roles permisions_of_roles[]
+}
+
+model permisions_of_roles {
+  permision  permisions @relation(fields: [permision_id], references: [id])
+  role       roles      @relation(fields: [role_id], references: [id])
+  created_at DateTime   @default(now())
+
+  permision_id Int @db.Integer
+  role_id      Int @db.SmallInt
+  @@id([permision_id, role_id])
+}
+
+model project_helper {
+  id         Int             @id @default(autoincrement())
+  project    project_defence @relation(fields: [project_id], references: [id])
+  helper     users[]
+  project_id Int             @unique
+}
+
+model project_student {
+  id         Int             @id @default(autoincrement())
+  project    project_defence @relation(fields: [project_id], references: [id])
+  student    users           @relation(fields: [student_id], references: [id])
+  project_id Int             @unique
+
+  student_id Int @unique @db.Integer
+}
+
+model project_process {
+  id              Int              @id() @default(autoincrement())
+  title           String           @db.VarChar(50)
+  description     String           @db.VarChar(2000)
+  created_at      DateTime         @default(now())
+  project_defence project_defence? @relation(fields: [project_id], references: [id])
+  project_id      Int?
+}
+
+model project_defence_details {
+  id              Int             @id @default(autoincrement()) @db.Integer
+  project_defence project_defence @relation(fields: [project_id], references: [id])
+  place           String          @db.VarChar(50)
+  time            DateTime        @db.Timestamp()
+  description     String          @db.VarChar(1000)
+  project_id      Int             @unique
+}
+
+model project_defence {
+  id             Int                      @id @default(autoincrement())
+  helper         project_helper? /// supervisor /// davar
+  student        project_student?
+  process        project_process[]
+  defence_detail project_defence_details?
+  created_at     DateTime                 @default(now())
+}
+
+/// after defence table for score
