@@ -1,3 +1,3 @@
-Back_side/node_modules
-Back_side/dist
-Front_side/my-app/node_modules
+./Back_side/node_modules
+./Back_side/dist
+./Front_side/my-app/node_modules
