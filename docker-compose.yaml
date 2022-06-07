@@ -1,0 +1,38 @@
+version: "3"
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USERNAME: user
+      POSTGRES_PASSWORD: user
+    ports:
+      - 5432:5432
+  minio:
+    image: "bitnami/minio:latest"
+    environment:
+      - "MINIO_ROOT_USER=minioadmin"
+      - "MINIO_ROOT_PASSWORD=minioadmin"
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: "./nginx"
+    ports:
+      - "4000:80"
+  api:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile
+      context: "./Back_side"
+    depends_on:
+      - postgres
+      - minio
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile
+      context: "./Front_side/my-app"
