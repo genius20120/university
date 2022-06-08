@@ -1,37 +1,51 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import LoginPage from './pages/login.page';
-import './index.css';
-import {BrowserRouter as Router,Route,Switch} from 'react-router-dom'
-import reportWebVitals from './reportWebVitals';
-import { ThemeProvider } from 'styled-components';
-import { HomePage } from './pages/home.page';
-import { Provider } from 'react-redux';
-import {store} from './redux/store'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import LoginPage from "./pages/login.page";
+import "./index.css";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import reportWebVitals from "./reportWebVitals";
+import { ThemeProvider } from "styled-components";
+import { HomePage } from "./pages/home.page";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import { Toaster } from "react-hot-toast";
+import { SettingPage } from "./pages/setting.page";
+import { MessagePage } from "./pages/message.page";
+import { InsertUserPage } from "./pages/insert_user/insert_user";
 
-const theme={
-  body:{
-    button:'lightblue',
-    borderRadius:'4px',
-    iconHeight:'30px'
-  }
-}
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const theme = {
+  body: {
+    button: "lightblue",
+    borderRadius: "4px",
+    iconHeight: "30px",
+  },
+};
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ThemeProvider theme={theme}>
+    <Toaster position="top-center" reverseOrder={false} />
     <Router>
-    <Provider store={store}>
-      <Switch>
-      <Route path='/home'>
-        <HomePage/>
-      </Route>
-      <Route path='/'>
-        <LoginPage/>
-      </Route>
-      </Switch>
-    </Provider>
+      <Provider store={store}>
+        <Switch>
+          <Route path={"/home/inserting_student"}>
+            <InsertUserPage />
+          </Route>
+          <Route path={"/message"}>
+            <MessagePage />
+          </Route>
+          <Route path={"/setting"}>
+            <SettingPage />
+          </Route>
+          <Route path="/home">
+            <HomePage />
+          </Route>
+          <Route path="/">
+            <LoginPage />
+          </Route>
+        </Switch>
+      </Provider>
     </Router>
-    </ThemeProvider>
+  </ThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -4,6 +4,7 @@ import AnalogClock from "analog-clock-react";
 import moment from "moment";
 import { DropBackComponent } from "../components/dropBack.component";
 import { InsertRolePage } from "./insert_role.page/insert_role.page";
+import { UserMenu } from "../components/userMenu.compnent";
 
 export function HomePage() {
   const options = {
@@ -21,7 +22,8 @@ export function HomePage() {
   };
 
   return (
-    <PageLayoutComponent>
+    <>
+      <UserMenu active={"home"} />
       <DropBackComponent />
       <RootDivHomePage>
         <div
@@ -39,6 +41,6 @@ export function HomePage() {
           <InsertRolePage />
         </div>
       </RootDivHomePage>
-    </PageLayoutComponent>
+    </>
   );
 }

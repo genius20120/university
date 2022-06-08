@@ -1,75 +1,123 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { HttpException } from "../errorHandling/httpException";
-import { insertUserRequestValidator } from "../middleware/validateSchema/insert_user.validator";
+import {
+  insertEmpValidator,
+  insertProfsValidator,
+  insertStudentValidator,
+} from "../middleware/validateSchema/insert_user.validator";
 import { LoginRequestValidate } from "../middleware/validateSchema/login.validator";
-import { loginService } from "../service/user.service";
-import { Client as minioClient } from "minio";
 import { uploadImageMiddleware } from "../middleware/upload/image";
 import { insertRoleValidator } from "../middleware/validateSchema/insert_role.validator";
 import { RoleService } from "../service/role.service";
+import { MinioClient } from "../service/image.service";
+import { UserService } from "../service/user.service";
+import { authenticateUser } from "../middleware/authentication";
 
 export const userRoute = Router();
 export const roleRoute = Router();
+const minioClient = MinioClient;
 const roleService = new RoleService();
+const userService = UserService;
 
 userRoute.post(
-  "/testUpload",
-  uploadImageMiddleware.single("file"),
+  "/insert/student",
+  [
+    authenticateUser("inserting_student"),
+    insertStudentValidator,
+    uploadImageMiddleware.single("file"),
+  ],
   async (req: Request, res: Response, next: NextFunction) => {
-    const newClient = await new minioClient({
-      endPoint: "localhost",
-      port: 9000,
-      useSSL: false,
-      accessKey: "minioadmin",
-      secretKey: "minioadmin",
-    });
-    console.log(await newClient.listBuckets());
-
-    const file = req.file;
-    if (!file) return new HttpException(400, "file not exist");
     try {
-      const result = await newClient.putObject(
-        "test",
-        "test_image1",
-        file.buffer
+      const file = req.file;
+      let photo;
+      if (file) {
+        photo = `${file.originalname}${new Date().getTime()}`;
+        const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
+        if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
+      }
+
+      const result = await userService.insert(
+        { photo, ...req.body, active: false },
+        res.locals.user.id
       );
-      const imageUrl = await newClient.presignedUrl(
-        "get",
-        "test",
-        "test_image1"
-      );
-      res.send(imageUrl);
+
+      if (result instanceof HttpException) return next(result);
+      return res.status(200).send("done");
     } catch (e) {
       console.log(e);
-      return;
+      throw e;
     }
   }
 );
 userRoute.post(
-  "/insert/student",
-  [insertUserRequestValidator],
+  "/insert/emp",
+  [
+    authenticateUser("inserting_emp"),
+    insertEmpValidator,
+    uploadImageMiddleware.single("file"),
+  ],
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await loginService(req.body.phone, req.body.code);
-    if (result instanceof HttpException) return next(result);
-    return res.status(200).send(result);
+    try {
+      const file = req.file;
+      let photo;
+      if (file) {
+        photo = `${file.originalname}${new Date().getTime()}`;
+        const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
+        if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
+      }
+
+      const result = await userService.insert(
+        { photo, ...req.body },
+        res.locals.user.id
+      );
+      if (result instanceof HttpException) return next(result);
+      return res.status(200).send("done");
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 );
 userRoute.post(
-  "/insert/professor",
-  [insertUserRequestValidator],
+  "/insert/profs",
+  [
+    authenticateUser("inserting_prof"),
+    insertProfsValidator,
+    uploadImageMiddleware.single("file"),
+  ],
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await loginService(req.body.phone, req.body.code);
-    if (result instanceof HttpException) return next(result);
-    return res.status(200).send(result);
+    try {
+      const file = req.file;
+      let photo;
+      if (file) {
+        photo = `${file.originalname}${new Date().getTime()}`;
+        const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
+        if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
+      }
+
+      const result = await userService.insert(
+        { photo, ...req.body },
+        res.locals.user.id
+      );
+      if (result instanceof HttpException) return next(result);
+      return res.status(200).send("done");
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 );
 roleRoute.post(
   "/insert",
-  [insertRoleValidator],
+  [authenticateUser("inserting_roles_permisions"), insertRoleValidator],
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await roleService.insertRole(req.body);
-    if (result instanceof HttpException) return next(result);
-    return res.status(201).send(result);
+    try {
+      const result = await roleService.insertRole(req.body);
+      res.locals.user = null;
+      return res.status(201).send(result);
+    } catch (e) {
+      return next(e);
+    }
   }
 );
 roleRoute.get(
@@ -91,10 +139,12 @@ roleRoute.get(
   }
 );
 userRoute.get(
-  "/getAll",
+  "/notActive/getAll",
   [],
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await loginService(req.body.phone, req.body.code);
+    console.log("its inserts");
+
+    const result = await userService.getAllNotActive(1, 20);
     if (result instanceof HttpException) return next(result);
     return res.status(200).send(result);
   }

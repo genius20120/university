@@ -22,16 +22,15 @@ export function DropBackComponent() {
     auth.authInfo?.data?.roles_of_users[0].role.id
   );
   const listData = auth.authInfo?.data?.roles_of_users
-    .filter((elem) => elem.role.id == selectValue)[0]
-    .role.permisions_of_roles.map((elem) => {
-      return {
-        name: elem.permision.name,
-        id: elem.permision.id,
-      };
-    });
+    .filter((elem) => {
+      if (elem.role.id == selectValue) {
+        return elem;
+      }
+    })[0]
+    .role.permisions_of_roles.map((elem) => elem.permision);
   const roles = auth.authInfo?.data?.roles_of_users.map((elem) => {
     return (
-      <RoleItem value={elem.role.name} key={elem.role.id}>
+      <RoleItem value={elem.role.id} key={elem.role.id}>
         {elem.role.name}
       </RoleItem>
     );
@@ -40,17 +39,24 @@ export function DropBackComponent() {
     <>
       <PublicNavContainer active={active}>
         <PublicNavContainerDiv>
-          <ImageComponent type="profile" />
+          <ImageComponent
+            type="profile"
+            image_url={auth.authInfo?.data?.photo || null}
+          />
           <div>
             <p>{`${auth.authInfo?.data?.first_name || "first_name"} ${
               auth.authInfo?.data?.last_name || "last_name"
             }`}</p>
-            <p>{`${auth.authInfo?.data?.role?.name || "role"}`}</p>
-            <p>{`${auth.authInfo?.data?.study_field || "field"}`}</p>
+            <p>{`${auth.authInfo?.data?.study_field || ""}`}</p>
           </div>
           <RoleSelect
             defaultValue={auth.authInfo?.data?.roles_of_users[0].role.name}
-            onChange={(e) => setSelectValue(e.currentTarget.key)}
+            onChange={(e) => {
+              const selectedIndex = e.target.options.selectedIndex;
+              console.log("fffffff", e.target.value);
+
+              setSelectValue(e.target.value);
+            }}
           >
             {roles}
           </RoleSelect>
@@ -60,7 +66,7 @@ export function DropBackComponent() {
         </PublicNavContainerDiv>
         <BackDrop onClick={() => setActive(false)} active={active} />
         <PublicNavOpener onClick={() => setActive(true)} active={active}>
-          <ImageComponent image_url="/arrow-icon.png" type="icon" />
+          <ImageComponent image_url="/left_arrow_icon.svg" type="icon" />
         </PublicNavOpener>
       </PublicNavContainer>
     </>

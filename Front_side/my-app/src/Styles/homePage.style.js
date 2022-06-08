@@ -36,7 +36,7 @@ export const PublicNavContainer = styled.div`
   width: 100%;
   height: 100%;
   position: fixed;
-  z-index: 1101;
+  z-index: ${({ active }) => (active ? 2 : 1)};
   top: 0;
   left: ${({ active }) => (active ? 0 : "90%")};
   display: flex;

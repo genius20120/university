@@ -8,6 +8,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Button } from "../../Styles/button.style";
+import toast from "react-hot-toast";
 
 export function InsertRolePage() {
   const [permision, setPermision] = useState([]);
@@ -16,8 +17,8 @@ export function InsertRolePage() {
     score: "",
     permisions: [],
   });
-  console.log(data);
   const { auth } = useReduxState();
+
   useEffect(() => {
     Rest.req({
       url: "/role/permision/getAll",
@@ -30,23 +31,38 @@ export function InsertRolePage() {
       setPermision(res.data);
     });
   }, []);
-  const restFetch = async (event) => {
-    try {
-      event.preventDefault();
-      Rest.req({
-        method: "POST",
-        data,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.authInfo?.token}`,
-        },
-        url: "/role/insert",
-      }).then((res) => {
-        console.log(res);
-      });
-    } catch (e) {
-      console.log(e);
+  function validation() {
+    if (!data.name.length) {
+      return Promise.reject(new Error("invalid name"));
     }
+    if (+data.score <= 0) {
+      return Promise.reject(new Error("should not be negative"));
+    }
+    if (data.permisions.length == 0) {
+      return Promise.reject(new Error("should has at least one permision"));
+    }
+    return Promise.resolve();
+  }
+  const restFetch = async (event) => {
+    event.preventDefault();
+    validation()
+      .then(() =>
+        Rest.req({
+          method: "POST",
+          data,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.authInfo?.token}`,
+          },
+          url: "/role/insert",
+        })
+      )
+      .then((res) => {
+        toast.success("done");
+      })
+      .catch((e) => {
+        toast.error(e.message);
+      });
   };
   return permision.length > 0 ? (
     <form onSubmit={restFetch}>

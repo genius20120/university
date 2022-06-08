@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { MulterError } from "multer";
+import { deleteResponseHeadersSetForApp } from "../middleware/deleteResponeHeaers";
 
 export class HttpException extends Error {
   status: number;
@@ -15,6 +16,7 @@ export function ErrorHandlingMiddleware(
   response: Response,
   next: NextFunction
 ) {
-  if (error instanceof MulterError) response.status(400).send(error.message);
-  else response.status(error.status).send(error.message);
+  if (error instanceof MulterError)
+    response.status(400).send({ message: error.message });
+  else response.status(error.status).send({ message: error.message });
 }

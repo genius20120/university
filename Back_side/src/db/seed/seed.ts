@@ -29,7 +29,7 @@ async function main() {
       },
     },
   });
-  const { role_name, ...userData } = superAdminUser;
+  const { role_ids, ...userData } = superAdminUser;
   const user = await db.users.create({
     data: {
       ...userData,
@@ -39,7 +39,7 @@ async function main() {
           {
             role: {
               connect: {
-                name: role_name,
+                id: role_ids[0],
               },
             },
           },

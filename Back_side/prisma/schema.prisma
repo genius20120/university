@@ -8,30 +8,53 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_DEV")
+  // url      = env("DATABASE_URL")
+
 }
 
 /// modelling db
 
 //user
+model field {
+  id    Int     @id @default(autoincrement()) @db.Integer
+  name  String  @unique @db.VarChar(50)
+  users users[]
+}
+
 model users {
   id                       Int              @id @default(autoincrement()) @db.Integer
   first_name               String           @db.VarChar(50)
   last_name                String           @db.VarChar(50)
   phone                    String           @db.VarChar(20)
-  national_id              Int              @db.Integer
-  personal_id              Int              @db.Integer
+  national_id              Int              @unique @db.Integer
+  personal_id              Int              @unique @db.Integer
   birthday                 DateTime
   entery_year              Int?             @db.SmallInt
-  study_field              String?          @db.VarChar(50)
+  field                    field?           @relation(fields: [field_id], references: [id])
   photo                    String?          @db.VarChar(100)
   created_at               DateTime         @default(now())
   assigned_by              Int              @db.Integer /// who create this user , totally for students and proffeser
   master_assigned_projects project_helper?  @relation(fields: [assigned_projects], references: [id])
   student_projects         project_student?
   assigned_projects        Int?
-  account_status           account_status?
+  active                   Boolean          @default(true)
   roles_of_users           roles_of_users[]
+  sent_message             message[]        @relation("send")
+  received_message         message[]        @relation("receive")
+  field_id                 Int?             @db.Integer
+  need_acception           Boolean?         @default(false)
+}
+
+model message {
+  id          Int      @id
+  sent_at     DateTime @default(now())
+  text        String   @db.VarChar(500)
+  sender      users    @relation("send", fields: [sender_id], references: [id])
+  receiver    users    @relation("receive", fields: [receiver_id], references: [id])
+  sender_id   Int      @db.Integer
+  receiver_id Int      @db.Integer
+
 }
 
 model roles_of_users {
@@ -41,14 +64,6 @@ model roles_of_users {
   created_at DateTime @default(now())
   role_id    Int      @db.SmallInt
   user_id    Int      @db.Integer
-}
-
-model account_status {
-  id          Int     @id @default(autoincrement())
-  user        users   @relation(fields: [user_id], references: [id])
-  status      String  @db.VarChar(10)
-  description String? @db.VarChar(100)
-  user_id     Int     @unique @db.Integer
 }
 
 /// Roles

@@ -7,8 +7,10 @@ import { RootDivLoginPage } from "../Styles/loginPage";
 import { Rest } from "../utils/rest-api";
 import { useAction } from "../hook/useActions";
 import { useState as useReduxState } from "../hook/useState";
+import toast from "react-hot-toast";
 
 const LoginPage = function () {
+  const history = useHistory();
   const [phone, setPhone] = useState(null);
   const [code, setCode] = useState(null);
   const actions = useAction();
@@ -31,12 +33,14 @@ const LoginPage = function () {
         },
         url: "/login",
       });
+      toast.success("successfuly authenticated");
       actions.setAuthenticatedUser(data);
-
       history.push("/home");
-    } catch (e) {}
+    } catch (e) {
+      toast.error(e.message);
+    }
   };
-  const history = useHistory();
+
   return (
     <PageLayoutComponent>
       <form onSubmit={restFetch}>

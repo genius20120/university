@@ -1,4 +1,6 @@
 import { permisions, PrismaClient, roles } from "@prisma/client";
+import { Http2ServerResponse } from "http2";
+import { HttpException } from "../../errorHandling/httpException";
 
 export class RoleRepository {
   private readonly db;
@@ -8,24 +10,28 @@ export class RoleRepository {
   async insertRole<T extends Omit<roles, "id"> & { permisions: number[] }>(
     data: T
   ) {
-    const { score, name, permisions } = data;
-    return await this.db.roles.create({
-      data: {
-        score,
-        name,
-        permisions_of_roles: {
-          create: permisions.map((elem) => {
-            return {
-              permision: {
-                connect: {
-                  id: elem,
+    try {
+      const { score, name, permisions } = data;
+      return await this.db.roles.create({
+        data: {
+          score,
+          name,
+          permisions_of_roles: {
+            create: permisions.map((elem) => {
+              return {
+                permision: {
+                  connect: {
+                    id: elem,
+                  },
                 },
-              },
-            };
-          }),
+              };
+            }),
+          },
         },
-      },
-    });
+      });
+    } catch (e) {
+      throw new HttpException(400, "another is existed");
+    }
   }
   async getAllRoles(): Promise<Pick<roles, "name" | "id">[]> {
     const roles = await this.db.roles.findMany({
