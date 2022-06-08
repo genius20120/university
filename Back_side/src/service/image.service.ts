@@ -6,8 +6,8 @@ class ImageService {
   private readonly bucketName;
   constructor() {
     this.minioClient = new Client({
-      endPoint: "localhost",
-      port: 9000,
+      endPoint: process.env.MINIO_HOST || "localhost",
+      port: process.env.MINIO_PORT ? +process.env.MINIO_PORT : 9000,
       useSSL: false,
       accessKey: "minioadmin",
       secretKey: "minioadmin",
