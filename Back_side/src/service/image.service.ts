@@ -35,7 +35,7 @@ class ImageService {
         .then((url) => {
           return url.replace(
             `${process.env.MINIO_HOST}:${process.env.MINIO_PORT}`,
-            `${process.env.SERVER_HOST}:${process.env.SERVER_PORT}/minio`
+            `${process.env.SERVER_HOST_DEV}:${process.env.SERVER_PORT}/minio`
           );
         });
       return imageUrl;
