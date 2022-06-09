@@ -30,11 +30,14 @@ class ImageService {
   }
   async generateLink(photo_name: string) {
     try {
-      const imageUrl = await this.minioClient.presignedUrl(
-        "get",
-        this.bucketName,
-        photo_name
-      );
+      const imageUrl = await this.minioClient
+        .presignedUrl("get", this.bucketName, photo_name)
+        .then((url) => {
+          return url.replace(
+            `${process.env.MINIO_HOST}:${process.env.MINIO_PORT}`,
+            `${process.env.SERVER_HOST}:${process.env.SERVER_PORT}/minio`
+          );
+        });
       return imageUrl;
     } catch (e) {
       return new HttpException(500, "image_link_problem");

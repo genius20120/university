@@ -40,7 +40,6 @@ const LoginPage = function () {
       toast.error(e.message);
     }
   };
-
   return (
     <PageLayoutComponent>
       <form onSubmit={restFetch}>
