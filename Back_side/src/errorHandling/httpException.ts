@@ -16,6 +16,10 @@ export function ErrorHandlingMiddleware(
   response: Response,
   next: NextFunction
 ) {
+  if (!response.locals) return next();
+  for (let local in response.locals) {
+    response.locals[local] = null;
+  }
   if (error instanceof MulterError)
     response.status(400).send({ message: error.message });
   else response.status(error.status).send({ message: error.message });

@@ -19,20 +19,29 @@ export class User {
       await this.db.users.create({
         data: {
           roles_of_users: {
-            create: role_ids.map((elem) => {
-              return {
-                role: {
-                  connect: {
-                    id: +elem,
+            create:
+              role_ids.length > 1
+                ? role_ids.map((elem) => {
+                    return {
+                      role: {
+                        connect: {
+                          id: +elem,
+                        },
+                      },
+                    };
+                  })
+                : {
+                    role: {
+                      connect: {
+                        id: +role_ids,
+                      },
+                    },
                   },
-                },
-              };
-            }),
           },
           field: field_id
             ? {
                 connect: {
-                  id: field_id,
+                  id: +field_id,
                 },
               }
             : undefined,
@@ -93,11 +102,64 @@ export class User {
     };
     const user = await this.db.users.findMany({
       ...query,
+      select: {
+        first_name: true,
+        last_name: true,
+        national_id: true,
+        birthday: true,
+        personal_id: true,
+        phone: true,
+        photo: true,
+        id: true,
+        field: {
+          select: {
+            name: true,
+          },
+        },
+      },
       skip: (page - 1) * size,
       take: size,
     });
     const count = await this.db.users.count();
     return { user, count };
+  }
+  async insertField(data: { name: string }) {
+    try {
+      const isExist = await this.db.field.findFirst({
+        where: {
+          name: data.name,
+        },
+      });
+      if (isExist)
+        throw new HttpException(400, "another field exist with this name");
+      await this.db.field.create({
+        data: {
+          name: data.name,
+        },
+      });
+      return;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async getAllField() {
+    const fields = await this.db.field.findMany();
+    return { data: fields };
+  }
+  async acceptStudent(id: number) {
+    try {
+      this.db.users.update({
+        where: {
+          id,
+        },
+        data: {
+          active: true,
+        },
+      });
+      return;
+    } catch (e) {
+      throw e;
+    }
   }
 }
 

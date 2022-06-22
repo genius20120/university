@@ -18,7 +18,7 @@ export function UserMenu() {
       >
         <Image
           src="/home_icon.svg"
-          active={url == "/home"}
+          active={url.startsWith("/home")}
           onClick={() => {
             history.push("/home");
           }}

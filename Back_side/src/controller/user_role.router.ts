@@ -20,6 +20,29 @@ const roleService = new RoleService();
 const userService = UserService;
 
 userRoute.post(
+  "/insert/field",
+  [authenticateUser("inserting_study_fields")],
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await userService.insertField(req.body);
+      return res.status(200).send({ message: "done" });
+    } catch (e) {
+      return next(e);
+    }
+  }
+);
+userRoute.get(
+  "/getAll/field",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await userService.getAllField();
+      return res.status(200).send(result);
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+userRoute.post(
   "/insert/student",
   [
     authenticateUser("inserting_student"),
@@ -28,21 +51,24 @@ userRoute.post(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log(req.body);
       const file = req.file;
+      console.log(file);
       let photo;
       if (file) {
         photo = `${file.originalname}${new Date().getTime()}`;
         const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
         if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
       }
-
+      delete req.body.file;
       const result = await userService.insert(
         { photo, ...req.body, active: false },
         res.locals.user.id
       );
 
       if (result instanceof HttpException) return next(result);
-      return res.status(200).send("done");
+
+      return res.status(200).send({ message: "done" });
     } catch (e) {
       console.log(e);
       throw e;
@@ -73,8 +99,7 @@ userRoute.post(
       if (result instanceof HttpException) return next(result);
       return res.status(200).send("done");
     } catch (e) {
-      console.log(e);
-      throw e;
+      return next(e);
     }
   }
 );
@@ -139,13 +164,28 @@ roleRoute.get(
   }
 );
 userRoute.get(
-  "/notActive/getAll",
+  "/notActive/getAll/:page/:size",
   [],
   async (req: Request, res: Response, next: NextFunction) => {
     console.log("its inserts");
 
-    const result = await userService.getAllNotActive(1, 20);
+    const result = await userService.getAllNotActive(
+      +req.params["page"],
+      +req.params["size"]
+    );
     if (result instanceof HttpException) return next(result);
     return res.status(200).send(result);
+  }
+);
+userRoute.put(
+  "/accepting_students/:stuId",
+  [authenticateUser("accepting_students")],
+  async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      await userService.acceptStudent(+request.params["stuId"]);
+      return response.status(200).send({ message: "done" });
+    } catch (e) {
+      return next(new HttpException(500, "db_error"));
+    }
   }
 );

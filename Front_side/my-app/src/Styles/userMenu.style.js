@@ -6,7 +6,7 @@ export const MainDiv = styled.div`
   left: 25%;
   z-index: 2;
   width: 50%;
-  height: 50px;
+  height: 35px;
   @media (max-width: 720px) {
     width: 100%;
     left: 0;

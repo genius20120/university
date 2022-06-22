@@ -44,7 +44,8 @@ export const insertStudentValidator = (
   next: NextFunction
 ) => {
   const res = studentSchema.validate(request.body);
+
   if (res.error)
     return next(new HttpException(400, res.error.details[0].message));
-  next();
+  return next();
 };

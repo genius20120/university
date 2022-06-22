@@ -15,8 +15,8 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Stack from "@mui/material/Stack";
 
-export function DropBackComponent() {
-  const [active, setActive] = useState(true);
+export function DropBackComponent({ isActive = true }) {
+  const [active, setActive] = useState(isActive);
   const { auth } = useReduxState();
   const [selectValue, setSelectValue] = useState(
     auth.authInfo?.data?.roles_of_users[0].role.id
@@ -53,8 +53,6 @@ export function DropBackComponent() {
             defaultValue={auth.authInfo?.data?.roles_of_users[0].role.name}
             onChange={(e) => {
               const selectedIndex = e.target.options.selectedIndex;
-              console.log("fffffff", e.target.value);
-
               setSelectValue(e.target.value);
             }}
           >

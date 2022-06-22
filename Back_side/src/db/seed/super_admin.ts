@@ -27,6 +27,10 @@ export const systemPermisions: PermisionDto[] = [
     key: "inserting_roles_permisions",
   },
   {
+    name: "وارد کردن رشته ها ",
+    key: "inserting_study_fields",
+  },
+  {
     name: "وارد کردن دانشجویان",
     key: "inserting_student",
   },

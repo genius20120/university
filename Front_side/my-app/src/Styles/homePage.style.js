@@ -51,6 +51,9 @@ export const PublicNavOpener = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media screen and (min-width: 720px) {
+    width: 5%;
+  }
 `;
 export const ActionMenu = styled.div`
   width: 100%;

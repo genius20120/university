@@ -7,6 +7,7 @@ class ImageService {
   constructor() {
     this.minioClient = new Client({
       endPoint: process.env.MINIO_HOST || "localhost",
+      // endPoint: "localhost",
       port: process.env.MINIO_PORT ? +process.env.MINIO_PORT : 9000,
       useSSL: false,
       accessKey: "minioadmin",
@@ -23,8 +24,6 @@ class ImageService {
       );
       return;
     } catch (e) {
-      console.log(e);
-
       return new HttpException(500, "image_upload_error");
     }
   }

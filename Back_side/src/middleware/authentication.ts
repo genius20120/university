@@ -26,6 +26,7 @@ export function authenticateUser(role_key: string) {
           response.locals.user = userInfo;
           return next();
         }
+
         return next(new HttpException(403, "unauthorized"));
       } else next(new HttpException(403, "unauthorized"));
     } catch (e) {

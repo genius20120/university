@@ -47,5 +47,14 @@ class User {
     }
     return users;
   }
+  async insertField(data: { name: string }) {
+    return await this.userRepository.insertField(data);
+  }
+  async getAllField() {
+    return await this.userRepository.getAllField();
+  }
+  async acceptStudent(id: number) {
+    return await this.userRepository.acceptStudent(id);
+  }
 }
 export const UserService = new User();

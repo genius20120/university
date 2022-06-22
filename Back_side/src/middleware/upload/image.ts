@@ -7,6 +7,8 @@ export const uploadImageMiddleware = multer({
   },
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
+    console.log("its in filtering ");
+
     if (file.mimetype === "image/png" || file.mimetype === "image/jpeg")
       cb(null, true);
     else cb(new HttpException(400, "bad file"));

@@ -10,8 +10,12 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { Toaster } from "react-hot-toast";
 import { SettingPage } from "./pages/setting.page";
-import { MessagePage } from "./pages/message.page";
-import { InsertUserPage } from "./pages/insert_user/insert_user";
+import { MessagePage } from "./pages/chat/message.page";
+import { InsertStudentPage } from "./pages/insert_user.page/insert_student";
+import { InsertField } from "./pages/insert_field.page/insert_field";
+import { InsertEmpPage } from "./pages/insert_user.page/insert_emp";
+import { InsertProfsPage } from "./pages/insert_user.page/insert_profs";
+import { AcceptStudentPage } from "./pages/accept_student.js/accept_student.page";
 
 const theme = {
   body: {
@@ -27,8 +31,20 @@ root.render(
     <Router>
       <Provider store={store}>
         <Switch>
+          <Route path={"/home/accepting_students"}>
+            <AcceptStudentPage />
+          </Route>
+          <Route path={"/home/inserting_study_fields"}>
+            <InsertField />
+          </Route>
+          <Route path={"/home/inserting_prof"}>
+            <InsertProfsPage />
+          </Route>
+          <Route path={"/home/inserting_emp"}>
+            <InsertEmpPage />
+          </Route>
           <Route path={"/home/inserting_student"}>
-            <InsertUserPage />
+            <InsertStudentPage />
           </Route>
           <Route path={"/message"}>
             <MessagePage />
