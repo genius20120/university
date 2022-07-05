@@ -8,8 +8,10 @@ import { MinioClient } from "./image.service";
 
 class User {
   private readonly userRepository;
+  private readonly imageService;
   constructor() {
     this.userRepository = UserRepository;
+    this.imageService = MinioClient;
   }
   async login(
     phone: string,
@@ -22,8 +24,7 @@ class User {
         expiresIn: config.JWT_EXPIRED_TIME,
       });
       if (user.photo) {
-        const imageUrl = await MinioClient.generateLink(user.photo);
-        if (imageUrl instanceof HttpException) return imageUrl;
+        const imageUrl = await this.imageService.generateLink(user.photo);
         user.photo = imageUrl;
       }
       return {
@@ -37,15 +38,18 @@ class User {
     return await this.userRepository.insert({ assigned_by, ...data });
   }
   async getAllNotActive(page: number, size: number) {
-    const users = await this.userRepository.getAllNotActiveUsers(page, size);
-    for (let user of users.user) {
-      if (user.photo) {
-        const photoUrl = await MinioClient.generateLink(user.photo);
-        if (photoUrl instanceof HttpException) return photoUrl;
-        user.photo = photoUrl;
+    try {
+      const users = await this.userRepository.getAllNotActiveUsers(page, size);
+      for (let user of users.user) {
+        if (user.photo) {
+          const photoUrl = await this.imageService.generateLink(user.photo);
+          user.photo = photoUrl;
+        }
       }
+      return users;
+    } catch (e) {
+      throw e;
     }
-    return users;
   }
   async insertField(data: { name: string }) {
     return await this.userRepository.insertField(data);
@@ -55,6 +59,48 @@ class User {
   }
   async acceptStudent(id: number) {
     return await this.userRepository.acceptStudent(id);
+  }
+  async searchUser(
+    filter: { first_name?: string; last_name?: string; personal_id?: number },
+    page: number,
+    size: number,
+    user_id: number
+  ) {
+    try {
+      const res = await this.userRepository.searchUser(
+        filter,
+        page,
+        size,
+        user_id
+      );
+      for (let user of res.data) {
+        if (user.photo)
+          user.photo = await this.imageService.generateLink(user.photo);
+      }
+      return res;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async searchSupervisorUser(
+    filter: { first_name?: string; last_name?: string; personal_id?: number },
+    user_id: number,
+    project_id: number
+  ) {
+    try {
+      const res = await this.userRepository.searchSupervisorUser(
+        filter,
+        user_id,
+        project_id
+      );
+      for (let user of res) {
+        if (user.photo)
+          user.photo = await this.imageService.generateLink(user.photo);
+      }
+      return res;
+    } catch (e) {
+      throw e;
+    }
   }
 }
 export const UserService = new User();

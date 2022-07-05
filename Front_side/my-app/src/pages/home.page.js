@@ -1,10 +1,10 @@
 import { PageLayoutComponent } from "../components/pageLayout.components";
 import { RootDivHomePage } from "../Styles/homePage.style";
-import AnalogClock from "analog-clock-react";
-import moment from "moment";
 import { DropBackComponent } from "../components/dropBack.component";
 import { InsertRolePage } from "./insert_role.page/insert_role.page";
 import { UserMenu } from "../components/userMenu.compnent";
+import { useState } from "../hook/useState";
+import { StudentPage } from "./student.page/student.page";
 
 export function HomePage() {
   const options = {
@@ -20,7 +20,8 @@ export function HomePage() {
       hour: "#ffffff",
     },
   };
-
+  const { auth } = useState();
+  const role = auth.authInfo.data.roles_of_users[0].role.name;
   return (
     <>
       <UserMenu active={"home"} />
@@ -29,16 +30,13 @@ export function HomePage() {
         <div
           style={{
             width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            height: "100vh",
           }}
         >
-          {/* <AnalogClock {...options} />
-          <p>{moment().format("ll")}</p> */}
-          <InsertRolePage />
+          {(() => {
+            if (role === "student") return <StudentPage />;
+            else return <InsertRolePage />;
+          })()}
         </div>
       </RootDivHomePage>
     </>

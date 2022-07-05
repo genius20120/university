@@ -65,59 +65,67 @@ export function InsertRolePage() {
       });
   };
   return permision.length > 0 ? (
-    <form onSubmit={restFetch}>
-      <RootDiv>
-        <label>نام نقش </label>
-        <InputComponent
-          onChange={(e) =>
-            setData((prevState) => {
-              return {
-                ...prevState,
-                name: e.target.value,
-              };
-            })
-          }
-        ></InputComponent>
-        <label>ضریب نمره دهی </label>
-        <InputComponent
-          type="number"
-          onChange={(e) =>
-            setData((prevState) => {
-              return {
-                ...prevState,
-                score: +e.target.value,
-              };
-            })
-          }
-          textAlign={"left"}
-        ></InputComponent>
-        <label>دسترسی ها </label>
-        <Autocomplete
-          multiple
-          fullWidth
-          id="tags-standard"
-          options={permision}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Multiple values"
-              placeholder="Favorites"
-            />
-          )}
-          onChange={(event, value) => {
-            setData((prevState) => {
-              return {
-                ...prevState,
-                permisions: value.map((elem) => elem.id),
-              };
-            });
-          }}
-        />
-        <Button type="submit"> ارسال </Button>
-      </RootDiv>
-    </form>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <form onSubmit={restFetch}>
+        <RootDiv>
+          <label>نام نقش </label>
+          <InputComponent
+            onChange={(e) =>
+              setData((prevState) => {
+                return {
+                  ...prevState,
+                  name: e.target.value,
+                };
+              })
+            }
+          ></InputComponent>
+          <label>ضریب نمره دهی </label>
+          <InputComponent
+            type="number"
+            onChange={(e) =>
+              setData((prevState) => {
+                return {
+                  ...prevState,
+                  score: +e.target.value,
+                };
+              })
+            }
+            textAlign={"left"}
+          ></InputComponent>
+          <label>دسترسی ها </label>
+          <Autocomplete
+            multiple
+            fullWidth
+            id="tags-standard"
+            options={permision}
+            getOptionLabel={(option) => option.name}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Multiple values"
+                placeholder="Favorites"
+              />
+            )}
+            onChange={(event, value) => {
+              setData((prevState) => {
+                return {
+                  ...prevState,
+                  permisions: value.map((elem) => elem.id),
+                };
+              });
+            }}
+          />
+          <Button type="submit"> ارسال </Button>
+        </RootDiv>
+      </form>
+    </div>
   ) : (
     <div style={{ display: "flex" }}>
       <CircularProgress />

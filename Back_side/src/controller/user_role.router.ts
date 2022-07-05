@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { NextFunction, Request, response, Response, Router } from "express";
 import { HttpException } from "../errorHandling/httpException";
 import {
   insertEmpValidator,
@@ -51,6 +51,7 @@ userRoute.post(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log("its here 33");
       console.log(req.body);
       const file = req.file;
       console.log(file);
@@ -58,7 +59,6 @@ userRoute.post(
       if (file) {
         photo = `${file.originalname}${new Date().getTime()}`;
         const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
-        if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
       }
       delete req.body.file;
       const result = await userService.insert(
@@ -71,7 +71,7 @@ userRoute.post(
       return res.status(200).send({ message: "done" });
     } catch (e) {
       console.log(e);
-      throw e;
+      throw next(e);
     }
   }
 );
@@ -89,7 +89,6 @@ userRoute.post(
       if (file) {
         photo = `${file.originalname}${new Date().getTime()}`;
         const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
-        if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
       }
 
       const result = await userService.insert(
@@ -97,7 +96,7 @@ userRoute.post(
         res.locals.user.id
       );
       if (result instanceof HttpException) return next(result);
-      return res.status(200).send("done");
+      return res.status(200).send({ message: "done" });
     } catch (e) {
       return next(e);
     }
@@ -117,7 +116,6 @@ userRoute.post(
       if (file) {
         photo = `${file.originalname}${new Date().getTime()}`;
         const isPhotoUpload = await minioClient.uploadPhoto(photo, file);
-        if (isPhotoUpload instanceof HttpException) return isPhotoUpload;
       }
 
       const result = await userService.insert(
@@ -125,7 +123,7 @@ userRoute.post(
         res.locals.user.id
       );
       if (result instanceof HttpException) return next(result);
-      return res.status(200).send("done");
+      return res.status(200).send({ message: "done" });
     } catch (e) {
       console.log(e);
       throw e;
@@ -167,8 +165,6 @@ userRoute.get(
   "/notActive/getAll/:page/:size",
   [],
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("its inserts");
-
     const result = await userService.getAllNotActive(
       +req.params["page"],
       +req.params["size"]
@@ -186,6 +182,42 @@ userRoute.put(
       return response.status(200).send({ message: "done" });
     } catch (e) {
       return next(new HttpException(500, "db_error"));
+    }
+  }
+);
+userRoute.post(
+  "/searchUser/:page/:size",
+  [authenticateUser()],
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await userService.searchUser(
+        req.body,
+        +req.params["page"],
+        +req.params["size"],
+        +res.locals.user.id
+      );
+      return res.status(200).send(result);
+    } catch (e) {
+      return next(e);
+    }
+  }
+);
+userRoute.post(
+  "/searchSupervisorUser",
+  [authenticateUser()],
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log(req.body);
+      //
+      const result = await userService.searchSupervisorUser(
+        req.body.filter,
+        +res.locals.user.id,
+        +req.body.project_id
+      );
+      //
+      return res.status(200).send(result);
+    } catch (e) {
+      return next(e);
     }
   }
 );

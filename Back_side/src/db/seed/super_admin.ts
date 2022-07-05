@@ -47,16 +47,20 @@ export const systemPermisions: PermisionDto[] = [
     key: "accepting_students",
   },
   {
-    name: "انتخاب استاد راهنما ",
-    key: "choosing_helper",
+    name: " پروژه  ",
+    key: "student_project",
   },
   {
-    name: "تایید پروژه های پیشنهاد شده ",
-    key: "accepting_assign_project",
+    name: "عملیات استاد راهنما ",
+    key: "helper_operations",
   },
   {
-    name: "تایید نهایی پروژه ها ",
-    key: "final_accepting_project",
+    name: "انتخاب ناظران پروژه ",
+    key: "assign_project_supervisors",
+  },
+  {
+    name: "وارد کردن تنظیمات  ",
+    key: "inserting_setting",
   },
   {
     name: "لیست دانشجویان ",
@@ -65,5 +69,13 @@ export const systemPermisions: PermisionDto[] = [
   {
     name: "لیست اساتید ",
     key: "profs_list",
+  },
+  {
+    name: "عملیات ناظران بر پروژه ",
+    key: "supervisor_operations",
+  },
+  {
+    name: "انتخاب مکان و زمان  نهایی دفاع ",
+    key: "inserting_final_defence_time_location",
   },
 ];

@@ -1,4 +1,5 @@
 import { config } from "../config/config";
+import { history } from "..";
 
 export class Rest {
   static fetch({ url, ...rest }) {
@@ -11,6 +12,7 @@ export class Rest {
     const response = await Rest.fetch(arg);
     const responseData = await response.json();
     if (!response.ok) {
+      if (response.status === 403) history.push("/");
       throw new Error(responseData.message);
     }
     return responseData;

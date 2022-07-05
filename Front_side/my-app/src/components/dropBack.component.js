@@ -11,9 +11,6 @@ import { useState as useReduxState } from "../hook/useState";
 import { ListComponent } from "../components/list.component";
 import { useState } from "react";
 import { ImageComponent } from "../components/image.component";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import Stack from "@mui/material/Stack";
 
 export function DropBackComponent({ isActive = true }) {
   const [active, setActive] = useState(isActive);

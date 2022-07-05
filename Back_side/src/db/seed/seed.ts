@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { studentRole } from "./student";
 import {
   superAdminRole,
   superAdminUser,
@@ -8,6 +9,22 @@ import {
 export { superAdminRole, superAdminUser } from "./super_admin";
 
 const db = new PrismaClient();
+async function createStudentRole() {
+  await db.roles.create({
+    data: {
+      ...studentRole,
+      permisions_of_roles: {
+        create: {
+          permision: {
+            connect: {
+              key: "student_project",
+            },
+          },
+        },
+      },
+    },
+  });
+}
 async function main() {
   const permisions = await db.permisions.createMany({
     data: systemPermisions,
@@ -29,6 +46,7 @@ async function main() {
       },
     },
   });
+
   const { role_ids, ...userData } = superAdminUser;
   const user = await db.users.create({
     data: {
@@ -47,6 +65,7 @@ async function main() {
       },
     },
   });
+  await createStudentRole();
 }
 
 main()

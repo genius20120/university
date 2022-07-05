@@ -6,8 +6,8 @@ class ImageService {
   private readonly bucketName;
   constructor() {
     this.minioClient = new Client({
-      endPoint: process.env.MINIO_HOST || "localhost",
-      // endPoint: "localhost",
+      // endPoint: process.env.MINIO_HOST || "localhost",
+      endPoint: "localhost",
       port: process.env.MINIO_PORT ? +process.env.MINIO_PORT : 9000,
       useSSL: false,
       accessKey: "minioadmin",
@@ -24,7 +24,7 @@ class ImageService {
       );
       return;
     } catch (e) {
-      return new HttpException(500, "image_upload_error");
+      throw new HttpException(500, "image_upload_error");
     }
   }
   async generateLink(photo_name: string) {
@@ -39,7 +39,7 @@ class ImageService {
         });
       return imageUrl;
     } catch (e) {
-      return new HttpException(500, "image_link_problem");
+      throw new HttpException(500, "image_link_problem");
     }
   }
 }

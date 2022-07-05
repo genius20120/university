@@ -5,7 +5,7 @@ export const RootDiv = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   max-width: 360px;
   margin-right: 21%;

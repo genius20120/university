@@ -12,8 +12,10 @@ export function UserMenu() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: "white",
           height: "100%",
           weight: "100%",
+          borderRadius: "20px",
         }}
       >
         <Image
@@ -24,15 +26,16 @@ export function UserMenu() {
           }}
         />
         <Image
-          src="/setting_icon.svg"
+          src="/notification.svg"
           hasBorder={true}
           active={url == "/setting"}
           onClick={() => {
             history.push("/setting");
           }}
         />
+
         <Image
-          src="/message_icon.svg"
+          src="/chat.svg"
           active={url == "/message"}
           onClick={() => {
             history.push("/message");

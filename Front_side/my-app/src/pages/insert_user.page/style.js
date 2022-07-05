@@ -9,12 +9,12 @@ export const Form = styled.form`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: lightblue;
 `;
 export const Div = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  background: "linear-gradient(270deg, white, #3f77d1)";
+  /* background: "linear-gradient(270deg, white, #3f77d1)"; */
   padding-bottom: 88px;
+  background-color: lightblue;
 `;

@@ -5,7 +5,7 @@ export const MainDiv = styled.div`
   height: 90px;
   display: flex;
   flex-direction: row-reverse;
-  background: linear-gradient(270deg, white, #3f77d1);
+  /* background: linear-gradient(270deg, white, #3f77d1); */
   padding-top: 16px;
   margin-top: 12px;
 `;
@@ -25,6 +25,7 @@ export const Input = styled.input`
   display: block;
   text-align: right;
   transition: 0.5s;
+  border-radius: 12px;
   &:focus {
     transform: scale(1.2);
   }

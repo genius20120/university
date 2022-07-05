@@ -23,38 +23,53 @@ model field {
 }
 
 model users {
-  id                       Int              @id @default(autoincrement()) @db.Integer
-  first_name               String           @db.VarChar(50)
-  last_name                String           @db.VarChar(50)
-  phone                    String           @db.VarChar(20)
-  national_id              Int              @unique @db.Integer
-  personal_id              Int              @unique @db.Integer
-  birthday                 DateTime
-  entery_year              Int?             @db.SmallInt
-  field                    field?           @relation(fields: [field_id], references: [id])
-  photo                    String?          @db.VarChar(100)
-  created_at               DateTime         @default(now())
-  assigned_by              Int              @db.Integer /// who create this user , totally for students and proffeser
-  master_assigned_projects project_helper?  @relation(fields: [assigned_projects], references: [id])
-  student_projects         project_student?
-  assigned_projects        Int?
-  active                   Boolean          @default(true)
-  roles_of_users           roles_of_users[]
-  sent_message             message[]        @relation("send")
-  received_message         message[]        @relation("receive")
-  field_id                 Int?             @db.Integer
-  need_acception           Boolean?         @default(false)
+  id                Int                 @id @default(autoincrement()) @db.Integer
+  room_id           String?             @default(uuid())
+  first_name        String              @db.VarChar(50)
+  last_name         String              @db.VarChar(50)
+  phone             String              @db.VarChar(20)
+  national_id       Int                 @unique @db.Integer
+  personal_id       Int                 @unique @db.Integer
+  birthday          DateTime
+  entery_year       Int?                @db.SmallInt
+  field             field?              @relation(fields: [field_id], references: [id])
+  photo             String?             @db.VarChar(100)
+  created_at        DateTime            @default(now())
+  assigned_by       Int                 @db.Integer /// who create this user , totally for students and proffeser
+  active            Boolean             @default(true)
+  roles_of_users    roles_of_users[]
+  field_id          Int?                @db.Integer
+  project_helper    project[]           @relation("helper")
+  project_student   project?            @relation("student")
+  assign_supervisor assign_supervisor[]
+  notification      notification[]
+
+}
+
+model notification {
+  id          Int      @id @default(autoincrement()) @db.Integer
+  title       String
+  description String
+  sent_at     DateTime @default(now())
+  opened      Boolean  @default(false)
+  users       users?   @relation(fields: [user_id], references: [id])
+  user_id     Int?     @db.Integer
+}
+
+model conversation {
+  id                  String    @id
+  first_user_is_seen  Boolean   @default(false)
+  second_user_is_seen Boolean   @default(false)
+  message             message[]
 }
 
 model message {
-  id          Int      @id
-  sent_at     DateTime @default(now())
-  text        String   @db.VarChar(500)
-  sender      users    @relation("send", fields: [sender_id], references: [id])
-  receiver    users    @relation("receive", fields: [receiver_id], references: [id])
-  sender_id   Int      @db.Integer
-  receiver_id Int      @db.Integer
-
+  id              BigInt        @id @default(autoincrement())
+  text            String
+  sent_at         DateTime      @default(now())
+  sender_id       Int           @db.Integer
+  conversation    conversation? @relation(fields: [conversation_id], references: [id])
+  conversation_id String?
 }
 
 model roles_of_users {
@@ -73,6 +88,7 @@ model roles {
   score               Int?                  @db.Integer()
   permisions_of_roles permisions_of_roles[]
   roles_of_users      roles_of_users[]
+  assign_supervisor   assign_supervisor[]
 }
 
 model permisions {
@@ -92,47 +108,57 @@ model permisions_of_roles {
   @@id([permision_id, role_id])
 }
 
-model project_helper {
-  id         Int             @id @default(autoincrement())
-  project    project_defence @relation(fields: [project_id], references: [id])
-  helper     users[]
-  project_id Int             @unique
+model project_date_setting {
+  id                      Int @id @default(autoincrement()) @db.Integer
+  until_days_after_finish Int
+  count                   Int
+  in_days                 Int
 }
 
-model project_student {
-  id         Int             @id @default(autoincrement())
-  project    project_defence @relation(fields: [project_id], references: [id])
-  student    users           @relation(fields: [student_id], references: [id])
-  project_id Int             @unique
-
-  student_id Int @unique @db.Integer
+model project {
+  id                  Int                 @id @default(autoincrement())
+  student             users               @relation("student", fields: [student_id], references: [id])
+  helper              users?              @relation("helper", fields: [helper_id], references: [id])
+  helper_score_weight Int
+  status              String /// in_proccess accept reject finish 
+  student_description String
+  file_url            String
+  student_id          Int                 @unique @db.Integer
+  helper_id           Int?                @db.Integer
+  assigned_supervisor assign_supervisor[]
+  project_reports     project_reports[]
+  helper_score        Float?
+  final_score         Float?
+  created_at          DateTime            @default(now())
 }
 
-model project_process {
-  id              Int              @id() @default(autoincrement())
-  title           String           @db.VarChar(50)
-  description     String           @db.VarChar(2000)
-  created_at      DateTime         @default(now())
-  project_defence project_defence? @relation(fields: [project_id], references: [id])
-  project_id      Int?
+model assign_supervisor {
+  id              Int            @id @default(autoincrement())
+  project         project        @relation(fields: [project_id], references: [id])
+  supervisor      users          @relation(fields: [user_id], references: [id])
+  supervisor_role roles          @relation(fields: [role_id], references: [id])
+  score_weight    Int
+  project_id      Int
+  user_id         Int            @db.Integer
+  defence_time    defence_time[]
+  role_id         Int            @db.SmallInt
+  project_scroe   Float?
 }
 
-model project_defence_details {
-  id              Int             @id @default(autoincrement()) @db.Integer
-  project_defence project_defence @relation(fields: [project_id], references: [id])
-  place           String          @db.VarChar(50)
-  time            DateTime        @db.Timestamp()
-  description     String          @db.VarChar(1000)
-  project_id      Int             @unique
+model defence_time {
+  id                Int               @id @default(autoincrement())
+  defence_date      DateTime
+  assign_supervisor assign_supervisor @relation(fields: [supervisor_id], references: [id])
+  supervisor_id     Int
 }
 
-model project_defence {
-  id             Int                      @id @default(autoincrement())
-  helper         project_helper? /// supervisor /// davar
-  student        project_student?
-  process        project_process[]
-  defence_detail project_defence_details?
-  created_at     DateTime                 @default(now())
+model project_reports {
+  id          Int      @id @default(autoincrement())
+  description String
+  file_url    String?
+  project     project  @relation(fields: [project_id], references: [id])
+  project_id  Int
+  created_at  DateTime @default(now())
 }
 
 /// after defence table for score

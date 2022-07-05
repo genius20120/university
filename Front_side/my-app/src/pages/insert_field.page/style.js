@@ -14,5 +14,5 @@ export const Form = styled.form`
 export const Div = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
 `;

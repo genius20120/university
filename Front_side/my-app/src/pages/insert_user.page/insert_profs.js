@@ -7,10 +7,10 @@ import { Form, Div } from "./style";
 import { useState as useReduxState } from "../../hook/useState";
 import toast from "react-hot-toast";
 import { Button } from "../../Styles/button.style";
-import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import TextField from "@mui/material/TextField";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 import Autocomplete from "@mui/material/Autocomplete";
 import { config } from "../../config/config";
 
@@ -93,13 +93,13 @@ export function InsertProfsPage() {
           headers: {
             Authorization: `Bearer ${auth.authInfo?.token}`,
           },
-        })
-          .then((e) => {
-            toast.success("Done");
-          })
-          .catch((e) => {
-            toast.error(e.message);
-          });
+        }).then(async (res) => {
+          const response = await res.json();
+          if (!response.ok) {
+            throw new Error(response.message);
+          }
+          toast.success("Done");
+        });
       })
       .catch((e) => {
         toast.error(e.message);
@@ -118,7 +118,6 @@ export function InsertProfsPage() {
               flexDirection: "row-reverse",
               justifyContent: "center",
               alignItem: "center",
-              background: "linear-gradient(270deg, white, #3f77d1)",
               paddingTop: "64px",
               paddingLeft: "32px",
               paddingRight: "32px",
@@ -126,17 +125,19 @@ export function InsertProfsPage() {
               // paddingRight: "20%",
             }}
           >
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <MobileDatePicker
-                label="تولد"
-                inputFormat="MM/dd/yyyy"
-                value={data.birthday}
-                onChange={(value) => {
-                  setData({ ...data, birthday: value });
-                }}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
+            <label>تولد </label>
+            <DatePicker
+              calendar={persian}
+              locale={persian_fa}
+              onChange={(res) => {
+                setData((prevData) => {
+                  return {
+                    ...prevData,
+                    birthday: new Date(res.unix),
+                  };
+                });
+              }}
+            />
             <input
               type={"file"}
               onChange={(e) => {
@@ -156,7 +157,6 @@ export function InsertProfsPage() {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              background: "linear-gradient(270deg, white, #3f77d1)",
               paddingTop: "64px",
             }}
           >
@@ -164,7 +164,7 @@ export function InsertProfsPage() {
               sx={{
                 alignItems: "center",
                 width: "50%",
-                background: "linear-gradient(270deg, white, #3f77d1)",
+                border: "1px solid black",
               }}
               multiple
               fullWidth
@@ -195,7 +195,7 @@ export function InsertProfsPage() {
               sx={{
                 alignItems: "center",
                 width: "50%",
-                background: "linear-gradient(270deg, white, #3f77d1)",
+                border: "1px solid black",
               }}
               fullWidth
               id="tags-standard"

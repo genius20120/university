@@ -1,11 +1,13 @@
 import styled from "styled-components";
 
 export const Label = styled.label`
-  margin: 16px;
-  background-color: lightblue;
+  padding: 32px;
 `;
 export const UserInfoDiv = styled.div`
-  display: block;
-  width: 75px;
-  margin: 16px;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 `;

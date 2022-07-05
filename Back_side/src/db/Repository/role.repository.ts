@@ -1,11 +1,12 @@
-import { permisions, PrismaClient, roles } from "@prisma/client";
+import { permisions, roles } from "@prisma/client";
 import { Http2ServerResponse } from "http2";
 import { HttpException } from "../../errorHandling/httpException";
+import { DbConnection } from "./DbConnection";
 
 export class RoleRepository {
   private readonly db;
   constructor() {
-    this.db = new PrismaClient();
+    this.db = DbConnection;
   }
   async insertRole<T extends Omit<roles, "id"> & { permisions: number[] }>(
     data: T
@@ -30,6 +31,7 @@ export class RoleRepository {
         },
       });
     } catch (e) {
+      console.log(e);
       throw new HttpException(400, "another is existed");
     }
   }
