@@ -42,7 +42,7 @@ export function StudentPage() {
       style={{
         width: "100%",
         height: "90%",
-        paddingTop: "9%",
+        paddingTop: "48px",
         backgroundColor: "azure",
         overflow: "auto",
       }}

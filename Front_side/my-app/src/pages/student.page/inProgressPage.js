@@ -13,10 +13,11 @@ export function InprogressPage() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        gap: "72px",
-        paddingRight: "10%",
+        gap: "56px",
+        width: "90%",
+        paddingRight: "5%",
+        paddingLeft: "5%",
         overflow: "auto",
-        paddingBottom: "9%",
         backgroundColor: "azure",
       }}
     >
@@ -30,7 +31,6 @@ export function InprogressPage() {
       >
         <InsertReport />
       </div>
-
       <div
         style={{
           height: "100%",

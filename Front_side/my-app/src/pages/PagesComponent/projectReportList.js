@@ -38,72 +38,25 @@ export function ProjectReportList({ projectId, type }) {
       });
   }, []);
   return (
-    <div
-      style={{
-        display: "felx",
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-      }}
-    >
-      <List>
-        {(() => {
-          console.log("list", list);
-          if (list.length > 0)
-            return list.map((elem, i) => {
-              return (
-                <React.Fragment key={i}>
-                  <ListItem alignItems="center" dir={"rtl"} button>
-                    <ListItemText>
-                      <div
-                        style={{
-                          paddingLeft: "16px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "8px",
-                          flexWrap: "wrap",
-                          height: "150px",
-                          overflow: "auto",
-                          paddingBottom: "32px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "40px",
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          <div>
-                            <a href={elem.file_url} download>
-                              دانلود توضیحات
-                            </a>
-                          </div>
-                          <Typography textAlign={"right"}>
-                            {new Date(elem.created_at).toLocaleDateString(
-                              "fa-IR"
-                            )}
-                          </Typography>
-                        </div>
-                        <Typography
-                          style={{ backgroundColor: "white" }}
-                          textAlign={"right"}
-                        >
-                          {elem.description}
-                        </Typography>
-                      </div>
-                    </ListItemText>
-                  </ListItem>
-                  {i === list.length - 1 || (
-                    <Divider variant="inset" component="li" />
-                  )}
-                </React.Fragment>
-              );
-            });
-        })()}
-      </List>
-    </div>
+    <>
+      {list.map((elem, i) => {
+        return (
+          <div className="container-fluid border bg-light ">
+            <div className="row justify-content-sm-center flex-row-reverse gy-5  ">
+              <div className="col-sm-7 text-center p-2 ">{`گزارش ${i} `}</div>
+              <div className="col-sm-6 text-center ">
+                {new Date(elem.created_at).toLocaleDateString("fa-IR")}
+              </div>
+              <div className="col-sm-6 text-center">
+                <a href={elem.file_url}>دانلود توضیحات </a>
+              </div>
+              <div className="col-sm-12 text-center p-4">
+                {elem.description}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </>
   );
 }
